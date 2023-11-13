@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2023 University of Michigan EECS183
  *
@@ -20,10 +21,34 @@ using namespace std;
 
 Move::Move(string commandString) : Move() {
     //TODO: Implement non-default constructor
+    stringstream ss(commandString);
+    char junk;
+    ss >> junk;
+    ss >> elevatorID;
+    if ( ss >> 'p' ){
+        isPickup == true;
+    } else if ( ss >> ''){
+        isPass == true;
+    } else if ( ss >> 'S'){
+        isSave == true;
+    } else if ( ss >> 'Q'){
+        isQuit == true;
+    } else if ( ss >> 'f'){
+        ss >> junk >> floor;
+    }
+    
+    
+
+
+
 }
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
-    //TODO: Implement isValidMove
+    if(isPass || isQuit || isSave)
+        return ture;
+    else if(0 <= elevatorId && elevatorID < NUM_ELEVATORS)
+        
+
     
     //Returning false to prevent compilation error
     return false;
