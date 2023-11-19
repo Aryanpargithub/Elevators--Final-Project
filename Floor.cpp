@@ -16,10 +16,15 @@
 using namespace std;
 
 int Floor::tick(int currentTime) {
-    //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    int explodedPeople = 0;
+    int explodedIndices[MAX_PEOPLE_PER_FLOOR] = {};
+    for (int i = 0; i < numPeople; i++) {
+        if (people[i].tick(currentTime) == true) {
+            explodedIndices[explodedPeople] = i;
+            explodedPeople++;
+        }
+    }
+    return explodedPeople;
 }
 
 void Floor::addPerson(Person newPerson, int request) {
