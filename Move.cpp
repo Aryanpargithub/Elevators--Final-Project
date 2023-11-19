@@ -20,31 +20,30 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-    //TODO: Implement non-default constructor
     stringstream ss(commandString);
-        char moveType;
-        ss >> moveType;
+    char junk;
+    char moveType;
     
-        isPickup = false;
-        isPass = false;
-        isSave = false;
-        isQuit = false;
-   
-
-        if (moveType == 'p') {
+    isPickup = false;
+    isPass = false;
+    isSave = false;
+    isQuit = false;
+    
+    if (commandString == "") {
+        isPass = true;
+    } else if (commandString == "S") {
+        isSave = true;
+    } else if (commandString == "Q") {
+        isQuit = true;
+    } else {
+        ss >> junk >> elevatorId >> moveType;
+        if (moveType == 'f') {
+            ss >> targetFloor;
+        } else if (moveType == 'p') {
             isPickup = true;
-        } else if (moveType == ' ') {
-            isPass = true;
-        } else if (moveType == 'S') {
-            isSave = true;
-        } else if (moveType == 'Q') {
-            isQuit = true;
-        } else if (moveType == 'f') {
-            int floorNum;
-            ss >> floorNum;
         }
-     
     }
+ }
     
     
 
