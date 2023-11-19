@@ -19,7 +19,7 @@ int Floor::tick(int currentTime) {
     int explodedPeople = 0;
     int explodedIndices[MAX_PEOPLE_PER_FLOOR] = {};
     for (int i = 0; i < numPeople; i++) {
-        if (people[i].tick(currentTime)) {
+        if (people[i].tick(currentTime) == true) {
             explodedIndices[explodedPeople] = i;
             explodedPeople++;
         }
