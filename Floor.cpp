@@ -24,11 +24,7 @@ int Floor::tick(int currentTime) {
             explodedPeople++;
         }
     }
-    for (int i = explodedPeople; i < numPeople - 1; i++) {
-        people[i] = people[i + 1];
-    }
-    numPeople--;
-
+    removePeople(explodedIndices, explodedPeople);
     return explodedPeople;
 }
 
