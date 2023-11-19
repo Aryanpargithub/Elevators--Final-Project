@@ -31,7 +31,7 @@ void Elevator::tick(int currentTime) {
 
 void Elevator::serviceRequest(int floorNum) {
     floorNum = floorNum >= 0 && floorNum <= NUM_FLOORS;
-    targetFloor = floorNum;
+    targetFloor = servicing;
     servicing = true;
 }
 
@@ -52,7 +52,7 @@ void Elevator::print(ostream &outs) {
 Elevator::Elevator() {
     currentFloor = 0;
     servicing = false;
-	targetFloor = 0;
+    targetFloor = 0;
 }
 
 void Elevator::setCurrentFloor(int currentFloorIn) {
@@ -60,7 +60,7 @@ void Elevator::setCurrentFloor(int currentFloorIn) {
 }
 
 bool Elevator::isServicing() const {
-	return servicing;
+    return servicing;
 }
 
 int Elevator::getCurrentFloor() const {
