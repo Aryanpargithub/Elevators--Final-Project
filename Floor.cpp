@@ -23,11 +23,34 @@ int Floor::tick(int currentTime) {
 }
 
 void Floor::addPerson(Person newPerson, int request) {
-    //TODO: Implement addPerson
+    if (numPeople < MAX_PEOPLE_PER_FLOOR) {
+        people[numPeople] = newPerson;
+        numPeople++;
+    }
+    if (request > 0) {
+        hasUpRequest = true;
+    } else {
+        hasDownRequest = true;
+    }
 }
 
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-    //TODO: Implement removePeople
+    //creating copy of constant indicesToRemove
+    int targets[MAX_PEOPLE_PER_FLOOR] = {};
+    for (int i = 0; i < MAX_PEOPLE_PER_FLOOR; i++) {
+        targets[i] = indicesToRemove[i];
+    }
+    //sorting targets to remove from least to greatest
+    sort(indicestoRemove, indicesToRemove + numPeopleToRemove);
+    
+    for (int j = 0; j < numPeopleToRemove; j++) {
+        for (int k = 0; k < numPeople; k++) {
+            people[indicesToRemove[j] + k] = people[indicesToRemove[j] + k + 1]; // removing person
+        }
+        numPeople -= 1;
+    }
+    
+    resetRequests();
 }
 
 void Floor::resetRequests() {
