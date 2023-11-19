@@ -19,12 +19,18 @@ void Elevator::tick(int currentTime) {
     if (currentTime % TICKS_PER_ELEVATOR_MOVE == 0 && servicing == true) {
         if (currentFloor > targetFloor) {
             currentFloor -= 1;
+            if (currentFloor == targetFloor) {
+                servicing = false;
+            }
         }
         else if (currentFloor < targetFloor) {
             currentFloor += 1;
+            if (currentFloor == targetFloor) {
+                servicing = false;
+            }
         }
         else {
-            servicing = false;
+            servicing = false; // might not be needed
         }
     }
 }
