@@ -16,15 +16,15 @@
 using namespace std;
 
 int Floor::tick(int currentTime) {
-    int explodedPeople = 0;
-    int explodedIndices[MAX_PEOPLE_PER_FLOOR] = {};
-    for (int i = 0; i < numPeople; i++) {
+    for (int i=0; i < MAX_PEOPLE_PER_FLOOR; i++) {
+        int explodedPeople;
+        people[i].tick(currentTime);
         if (people[i].tick(currentTime) == true) {
-            explodedIndices[explodedPeople] = i;
-            explodedPeople++;
+            
         }
     }
-    return explodedPeople;
+
+    return 0;
 }
 
 void Floor::addPerson(Person newPerson, int request) {
@@ -40,26 +40,23 @@ void Floor::addPerson(Person newPerson, int request) {
 }
 
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-    //creating copy of constant indicesToRemove
-    int targets[MAX_PEOPLE_PER_FLOOR] = {};
-    for (int i = 0; i < MAX_PEOPLE_PER_FLOOR; i++) {
-        targets[i] = indicesToRemove[i];
-    }
-    //sorting targets to remove from least to greatest
-    sort(targets, targets + numPeopleToRemove);
-    
-    for (int j = 0; j < numPeopleToRemove; j++) {
-        for (int k = 0; k < numPeople; k++) {
-            people[targets[j] + k] = people[targets[j] + k + 1]; // removing person
-        }
-        numPeople -= 1;
-    }
-    
-    resetRequests();
+    //TODO: Implement removePeople
 }
 
 void Floor::resetRequests() {
-    //TODO: Implement resetRequests
+    int numPeople;
+    bool hasUpRequest;
+    bool hasDownRequest;
+    int floorDifference;
+    hasUpRequest = true;
+    hasDownRequest = true;
+    
+    if (int i = 0; i < numPeople; i++) {
+        
+        if (floorDifference > 0) {
+            return
+        }
+    }
 }
 
 //////////////////////////////////////////////////////
@@ -73,60 +70,60 @@ Floor::Floor() {
 }
 
 void Floor::prettyPrintFloorLine1(ostream& outs) const {
-	string up = "U";
-	outs << (hasUpRequest ? up : " ") << " ";
-	for (int i = 0; i < numPeople; ++i){
-		outs << people[i].getAngerLevel();
-		outs << ((people[i].getAngerLevel() < MAX_ANGER) ? "   " : "  ");
-	}
-	outs << endl;
+    string up = "U";
+    outs << (hasUpRequest ? up : " ") << " ";
+    for (int i = 0; i < numPeople; ++i){
+        outs << people[i].getAngerLevel();
+        outs << ((people[i].getAngerLevel() < MAX_ANGER) ? "   " : "  ");
+    }
+    outs << endl;
 }
 
 void Floor::prettyPrintFloorLine2(ostream& outs) const {
-	string down = "D";
-	outs << (hasDownRequest ? down : " ") << " ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << "o   ";
-	}
-	outs << endl;
+    string down = "D";
+    outs << (hasDownRequest ? down : " ") << " ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << "o   ";
+    }
+    outs << endl;
 }
 
 void Floor::printFloorPickupMenu(ostream& outs) const {
-	cout << endl;
-	outs << "Select People to Load by Index" << endl;
-	outs << "All people must be going in same direction!";
-	/*  O   O
-	// -|- -|-
-	//  |   |
-	// / \ / \  */
-	outs << endl << "              ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << " O   ";
-	}
-	outs << endl << "              ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << "-|-  ";
-	}
-	outs << endl << "              ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << " |   ";
-	}
-	outs << endl << "              ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << "/ \\  ";
-	}
-	outs << endl << "INDEX:        ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << " " << i << "   ";
-	}
-	outs << endl << "ANGER:        ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << " " << people[i].getAngerLevel() << "   ";
-	}
-	outs << endl << "TARGET FLOOR: ";
-	for (int i = 0; i < numPeople; ++i) {
-		outs << " " << people[i].getTargetFloor() << "   ";
-	}
+    cout << endl;
+    outs << "Select People to Load by Index" << endl;
+    outs << "All people must be going in same direction!";
+    /*  O   O
+    // -|- -|-
+    //  |   |
+    // / \ / \  */
+    outs << endl << "              ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << " O   ";
+    }
+    outs << endl << "              ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << "-|-  ";
+    }
+    outs << endl << "              ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << " |   ";
+    }
+    outs << endl << "              ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << "/ \\  ";
+    }
+    outs << endl << "INDEX:        ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << " " << i << "   ";
+    }
+    outs << endl << "ANGER:        ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << " " << people[i].getAngerLevel() << "   ";
+    }
+    outs << endl << "TARGET FLOOR: ";
+    for (int i = 0; i < numPeople; ++i) {
+        outs << " " << people[i].getTargetFloor() << "   ";
+    }
 }
 
 void Floor::setHasUpRequest(bool hasRequest) {
@@ -134,7 +131,7 @@ void Floor::setHasUpRequest(bool hasRequest) {
 }
 
 bool Floor::getHasUpRequest() const {
-	return hasUpRequest;
+    return hasUpRequest;
 }
 
 void Floor::setHasDownRequest(bool hasRequest) {
@@ -142,7 +139,7 @@ void Floor::setHasDownRequest(bool hasRequest) {
 }
 
 bool Floor::getHasDownRequest() const {
-	return hasDownRequest;
+    return hasDownRequest;
 }
 
 int Floor::getNumPeople() const {
