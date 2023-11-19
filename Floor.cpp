@@ -60,6 +60,9 @@ void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int nu
             people[targets[j] + k] = people[targets[j] + k + 1]; // removing person
         }
         numPeople -= 1;
+        for (int h = 0; h < numPeopleToRemove; h++) {
+            targets[h] -= 1;
+        }
     }
     
     resetRequests();
