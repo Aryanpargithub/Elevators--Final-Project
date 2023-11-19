@@ -16,15 +16,15 @@
 using namespace std;
 
 int Floor::tick(int currentTime) {
-    for (int i=0; i < MAX_PEOPLE_PER_FLOOR; i++) {
-        int explodedPeople;
-        people[i].tick(currentTime);
+    int explodedPeople = 0;
+    int explodedIndices[MAX_PEOPLE_PER_FLOOR] = {};
+    for (int i = 0; i < numPeople; i++) {
         if (people[i].tick(currentTime) == true) {
-            
+            explodedIndices[explodedPeople] = i;
+            explodedPeople++;
         }
     }
-
-    return 0;
+    return explodedPeople;
 }
 
 void Floor::addPerson(Person newPerson, int request) {
@@ -40,21 +40,31 @@ void Floor::addPerson(Person newPerson, int request) {
 }
 
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-    //TODO: Implement removePeople
+    //creating copy of constant indicesToRemove
+    int targets[MAX_PEOPLE_PER_FLOOR] = {};
+    for (int i = 0; i < MAX_PEOPLE_PER_FLOOR; i++) {
+        targets[i] = indicesToRemove[i];
+    }
+    //sorting targets to remove from least to greatest
+    sort(targets, targets + numPeopleToRemove);
+    
+    for (int j = 0; j < numPeopleToRemove; j++) {
+        for (int k = 0; k < numPeople; k++) {
+            people[targets[j] + k] = people[targets[j] + k + 1]; // removing person
+        }
+        numPeople -= 1;
+    }
+    
+    resetRequests();
 }
 
 void Floor::resetRequests() {
-    int numPeople;
-    bool hasUpRequest;
-    bool hasDownRequest;
-    int floorDifference;
-    hasUpRequest = true;
-    hasDownRequest = true;
-    
-    if (int i = 0; i < numPeople; i++) {
-        
+    for (int i = 0; i < numPeople; i++) {
+        int floorDifference = people[i].getTargetFloor() - people[i].getCurrentFloor();
         if (floorDifference > 0) {
-            return
+            hasUpRequest = true;
+        } else {
+            hasDownRequest = true;
         }
     }
 }
