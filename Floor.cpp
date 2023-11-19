@@ -66,15 +66,20 @@ void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int nu
 }
 
 void Floor::resetRequests() {
+    hasUpRequest = false;
+    hasDownRequest = false;
+    
     for (int i = 0; i < numPeople; i++) {
         int floorDifference = people[i].getTargetFloor() - people[i].getCurrentFloor();
         if (floorDifference > 0) {
             hasUpRequest = true;
-        } else {
+        }
+        else {
             hasDownRequest = true;
         }
     }
 }
+
 
 //////////////////////////////////////////////////////
 ////// DO NOT MODIFY ANY CODE BENEATH THIS LINE //////
