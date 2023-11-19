@@ -13,7 +13,7 @@
  
 #include <cmath>
 #include <sstream>
-#include <stdio.h>      
+#include <stdio.h>
 #include <stdlib.h>
 #include "Move.h"
 
@@ -22,41 +22,86 @@ using namespace std;
 Move::Move(string commandString) : Move() {
     //TODO: Implement non-default constructor
     stringstream ss(commandString);
-    char junk;
-    ss >> junk;
-    ss >> elevatorID;
-    if ( ss >> 'p' ){
-        isPickup == true;
-    } else if ( ss >> ''){
-        isPass == true;
-    } else if ( ss >> 'S'){
-        isSave == true;
-    } else if ( ss >> 'Q'){
-        isQuit == true;
-    } else if ( ss >> 'f'){
-        ss >> junk >> floor;
+        char moveType;
+        ss >> moveType;
+    
+        isPickup = false;
+        isPass = false;
+        isSave = false;
+        isQuit = false;
+   
+
+        if (moveType == 'p') {
+            isPickup = true;
+        } else if (moveType == ' ') {
+            isPass = true;
+        } else if (moveType == 'S') {
+            isSave = true;
+        } else if (moveType == 'Q') {
+            isQuit = true;
+        } else if (moveType == 'f') {
+            int floorNum;
+            ss >> floorNum;
+        }
+     
     }
     
     
 
 
 
-}
+
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
-    if(isPass || isQuit || isSave)
-        return ture;
-    else if(0 <= elevatorId && elevatorID < NUM_ELEVATORS)
-        
-
+   
+    if (isPass == true || isQuit == true || isSave == true) {
+        return true;
+    }
     
-    //Returning false to prevent compilation error
-    return false;
+    else if (0 <= elevatorId && elevatorId < NUM_ELEVATORS && !elevators[elevatorId].isServicing()) {
+       
+        if (isPickup || elevators[elevatorId].getCurrentFloor() != targetFloor || (0 <= targetFloor && targetFloor < NUM_FLOORS) ) {
+            return true;
+        
+        }
+        
+    }
+        
+        return false;
+    
 }
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
-    //TODO: Implement setPeopleToPickup
+    
+    numPeopleToPickup = 0;
+    totalSatisfaction = 0;
+    int extremeFloor = currentFloor;
+
+   
+    for (int i = 0; i < pickupList.size(); i++) {
+           int pIndex = i - '0';
+           peopleToPickup[numPeopleToPickup++] = pIndex;
+           
+           Person pickedPerson = pickupFloor.getPersonByIndex(pIndex);
+           
+           totalSatisfaction += pickedPerson.getAngerLevel();
+
+         
+           int pTargetFloor = pickedPerson.getTargetFloor();
+        
+           if (pTargetFloor > extremeFloor || pTargetFloor < extremeFloor ) {
+               extremeFloor = pTargetFloor;
+           }
+          
+       }
+     
+       setTargetFloor(extremeFloor);
+    
 }
+
+
+
+
 
 //////////////////////////////////////////////////////
 ////// DO NOT MODIFY ANY CODE BENEATH THIS LINE //////
@@ -67,7 +112,7 @@ Move::Move() {
     targetFloor = -1;
     numPeopleToPickup = 0;
     totalSatisfaction = 0;
-	isPass = false;
+    isPass = false;
     isPickup = false;
     isSave = false;
     isQuit = false;
@@ -78,15 +123,15 @@ bool Move::isPickupMove() const {
 }
 
 bool Move::isPassMove() const {
-	return isPass;
+    return isPass;
 }
 
 bool Move::isSaveMove() const {
-	return isSave;
+    return isSave;
 }
 
 bool Move::isQuitMove() const {
-	return isQuit;
+    return isQuit;
 }
 
 int Move::getElevatorId() const {
