@@ -16,19 +16,19 @@
 using namespace std;
 
 void Elevator::tick(int currentTime) {
-    if (currentTime % TICKS_PER_ELEVATOR_MOVE && servicing == true) {
+    if (currentTime % TICKS_PER_ELEVATOR_MOVE == 0 && servicing == true) {
         if (currentFloor > targetFloor) {
-            currentFloor = currentFloor + 1;
+            currentFloor -= 1;
         }
         else if (currentFloor < targetFloor) {
-            currentFloor = currentFloor - 1;
+            currentFloor += 1;
         }
-        else if (currentFloor == targetFloor) {
+        else {
             servicing = false;
-            
         }
     }
 }
+
 void Elevator::serviceRequest(int floorNum) {
     floorNum = floorNum >= 0 && floorNum <= NUM_FLOORS;
     targetFloor = floorNum;
