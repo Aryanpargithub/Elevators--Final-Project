@@ -17,11 +17,10 @@ using namespace std;
 void Building::spawnPerson(Person newPerson){
     //TODO: Implement spawnPerson
         
-    int tFloor = newPerson.getTargetFloor();
+   int tFloor = newPerson.getTargetFloor();
     int cFloor = newPerson.getCurrentFloor();
     int fRequest = tFloor - cFloor;
-    Floor f;
-    f.addPerson(newPerson, fRequest);
+    floors[cFloor].addPerson(newPerson, fRequest);
 }
 
 void Building::update(Move move){
