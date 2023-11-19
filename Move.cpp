@@ -20,61 +20,52 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-   
     stringstream ss(commandString);
-        char moveType;
-        ss >> moveType;
+    char junk;
+    char moveType;
     
-        isPickup = false;
-        isPass = false;
-        isSave = false;
-        isQuit = false;
-   
-
-        if (moveType == 'p') {
+    isPickup = false;
+    isPass = false;
+    isSave = false;
+    isQuit = false;
+    
+    if (commandString == "") {
+        isPass = true;
+    } else if (commandString == "S") {
+        isSave = true;
+    } else if (commandString == "Q") {
+        isQuit = true;
+    } else {
+        ss >> junk >> elevatorId >> moveType;
+        if (moveType == 'f') {
+            ss >> targetFloor;
+        } else if (moveType == 'p') {
             isPickup = true;
-        } else if (moveType == ' ') {
-            isPass = true;
-        } else if (moveType == 'S') {
-            isSave = true;
-        } else if (moveType == 'Q') {
-            isQuit = true;
-        } else if (moveType == 'f') {
-            int floorNum;
-            ss >> floorNum;
-        }
-     
-    }
-    
-    
-
-
-
-bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
- 
-    if (isPass || isQuit || isSave) {
-        return true;
-    }
-
-    if (0 <= elevatorId && elevatorId < NUM_ELEVATORS && !elevators[elevatorId].isServicing()) {
- 
-        if (isPickup) {
-            return true;
-        }
-        
-        else if (0 <= targetFloor && targetFloor < NUM_FLOORS && elevators[elevatorId].getCurrentFloor() != targetFloor) {
-   
-            return true;
         }
     }
-
-    return false;
 }
 
-
-
-
-
+//check
+bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
+    if (isPass == true || isQuit == true || isSave == true) {
+        return true;
+    }
+    else if (isPickup == true) {
+        if (elevatorId >= 0 && elevatorId < NUM_ELEVATORS && elevators[elevatorId].isServicing() == false) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (targetFloor >= 0 && targetFloor < NUM_FLOORS && targetFloor != elevators[elevatorId].getCurrentFloor()) {
+        if (elevatorId >= 0 && elevatorId < NUM_ELEVATORS && elevators[elevatorId].isServicing() == false) {
+                return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
     numPeopleToPickup = 0;
