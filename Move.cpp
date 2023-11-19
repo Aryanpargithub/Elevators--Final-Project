@@ -20,55 +20,60 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
+    //TODO: Implement non-default constructor
     stringstream ss(commandString);
-    char junk;
-    char moveType;
+        char moveType;
+        ss >> moveType;
     
-    isPickup = false;
-    isPass = false;
-    isSave = false;
-    isQuit = false;
-    
-    if (commandString == "") {
-        isPass = true;
-    } else if (commandString == "S") {
-        isSave = true;
-    } else if (commandString == "Q") {
-        isQuit = true;
-    } else {
-        ss >> junk >> elevatorId >> moveType;
-        if (moveType == 'f') {
-            ss >> targetFloor;
-        } else if (moveType == 'p') {
+        isPickup = false;
+        isPass = false;
+        isSave = false;
+        isQuit = false;
+   
+
+        if (moveType == 'p') {
             isPickup = true;
+        } else if (moveType == ' ') {
+            isPass = true;
+        } else if (moveType == 'S') {
+            isSave = true;
+        } else if (moveType == 'Q') {
+            isQuit = true;
+        } else if (moveType == 'f') {
+            int floorNum;
+            ss >> floorNum;
         }
+     
     }
- }
     
     
-
-
 
 
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
-   
-    if (isPass == true || isQuit == true || isSave == true) {
+ 
+    if (isPass || isQuit || isSave) {
         return true;
     }
-    
-    else if (0 <= elevatorId && elevatorId < NUM_ELEVATORS && !elevators[elevatorId].isServicing()) {
-       
-        if (isPickup || elevators[elevatorId].getCurrentFloor() != targetFloor || (0 <= targetFloor && targetFloor < NUM_FLOORS) ) {
+
+    if (0 <= elevatorId && elevatorId < NUM_ELEVATORS && !elevators[elevatorId].isServicing()) {
+ 
+        if (isPickup) {
             return true;
-        
         }
         
+        else if (0 <= targetFloor && targetFloor < NUM_FLOORS && elevators[elevatorId].getCurrentFloor() != targetFloor) {
+   
+            return true;
+        }
     }
-        
-        return false;
-    
+
+    return false;
 }
+
+
+
+
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
     
@@ -76,25 +81,22 @@ void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, c
     totalSatisfaction = 0;
     int extremeFloor = currentFloor;
 
-   
     for (int i = 0; i < pickupList.size(); i++) {
-           int pIndex = i - '0';
-           peopleToPickup[numPeopleToPickup++] = pIndex;
+        int pIndex = i - '0';
+        peopleToPickup[numPeopleToPickup++] = pIndex;
            
-           Person pickedPerson = pickupFloor.getPersonByIndex(pIndex);
+        Person pickedPerson = pickupFloor.getPersonByIndex(pIndex);
            
-           totalSatisfaction += pickedPerson.getAngerLevel();
+        totalSatisfaction += pickedPerson.getAngerLevel();
 
          
-           int pTargetFloor = pickedPerson.getTargetFloor();
+        int pTargetFloor = pickedPerson.getTargetFloor();
         
-           if (pTargetFloor > extremeFloor || pTargetFloor < extremeFloor ) {
+        if (pTargetFloor > extremeFloor || pTargetFloor < extremeFloor ) {
                extremeFloor = pTargetFloor;
-           }
-          
-       }
-     
-       setTargetFloor(extremeFloor);
+        }
+    }
+    setTargetFloor(extremeFloor);
     
 }
 
