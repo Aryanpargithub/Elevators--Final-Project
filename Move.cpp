@@ -20,7 +20,7 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-    //TODO: Implement non-default constructor
+   
     stringstream ss(commandString);
         char moveType;
         ss >> moveType;
@@ -75,30 +75,32 @@ bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
 
 
 
+
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
-    
     numPeopleToPickup = 0;
     totalSatisfaction = 0;
     int extremeFloor = currentFloor;
 
-    for (int i = 0; i < pickupList.size(); i++) {
-        int pIndex = i - '0';
+    for (char c : pickupList) {
+        int pIndex = c - '0';
         peopleToPickup[numPeopleToPickup++] = pIndex;
-           
+
         Person pickedPerson = pickupFloor.getPersonByIndex(pIndex);
-           
+
         totalSatisfaction += pickedPerson.getAngerLevel();
 
-         
         int pTargetFloor = pickedPerson.getTargetFloor();
-        
-        if (pTargetFloor > extremeFloor || pTargetFloor < extremeFloor ) {
-               extremeFloor = pTargetFloor;
+
+        if (pTargetFloor > extremeFloor) {
+            extremeFloor = pTargetFloor;
+        } else if (pTargetFloor < extremeFloor) {
+            extremeFloor = pTargetFloor;
         }
     }
+
     setTargetFloor(extremeFloor);
-    
 }
+
 
 
 
