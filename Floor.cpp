@@ -43,24 +43,26 @@ void Floor::addPerson(Person newPerson, int request) {
 }
 
 void Floor::removePeople(const int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-       // creating a copy of constant indicesToRemove
-        int targets[MAX_PEOPLE_PER_FLOOR] = {};
-        for (int i = 0; i < MAX_PEOPLE_PER_FLOOR; i++) {
-            targets[i] = indicesToRemove[i];
-        }
-
-        sort(targets, targets + numPeopleToRemove);
-
-        for (int j = 0; j < numPeopleToRemove; j++) {
-            for (int k = targets[j]; k < numPeople - 1; k++) {
-                people[k] = people[k + 1]; // removing person
-            }
-            numPeople -= 1;
-        }
-
-        resetRequests();
+    //creating copy of constant indicesToRemove
+    int targets[MAX_PEOPLE_PER_FLOOR] = {};
+    for (int i = 0; i < MAX_PEOPLE_PER_FLOOR; i++) {
+        targets[i] = indicesToRemove[i];
+    }
+    //sorting targets to remove from least to greatest
+    sort(targets, targets + numPeopleToRemove);
     
-
+    for (int j = 0; j < numPeopleToRemove; j++) {
+        for (int k = 0; k < (numPeople - targets[j] - 1); k++) {
+            people[targets[j] + k] = people[targets[j] + k + 1]; // removing person and shifting everyone down
+        }
+        numPeople -= 1;
+        for (int h = 0; h < numPeopleToRemove; h++) {
+            targets[h] -= 1;
+        }
+    }
+    
+    resetRequests();
+    
 }
 
 void Floor::resetRequests() {
