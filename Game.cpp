@@ -34,9 +34,9 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     Person p1(load);
         
         
-    while(building.getTime() <= p1.getTurn()){            
-     building.prettyPrintBuilding(cout);             
-     satisfactionIndex.printSatisfaction(cout, false);             
+    while(building.getTime() <= p1.getTurn()){             
+     building.prettyPrintBuilding(cout);            
+     satisfactionIndex.printSatisfaction(cout, false);            
      checkForGameEnd();
             Move nextMove = getMove();
             update(nextMove);
