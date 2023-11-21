@@ -21,37 +21,49 @@ using namespace std;
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     
-    if(!gameFile.is_open()){
-       exit(1);
+    if (!gameFile.is_open()) {
+        exit(1);
     }
- 
+    
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
     
     string ss;
-    while (gameFile >> ss) {
-       Person p(ss);
-        
-       while (building.getTime() <= p.getTurn()) {             
-          building.prettyPrintBuilding(cout);            
-          satisfactionIndex.printSatisfaction(cout, false);            
-          checkForGameEnd();
-     
-          Move nextMove = getMove();
-          update(nextMove);    
-       }
-       building.spawnPerson(p);  
-    }
- 
-    while(true) {
+    gameFile >> ss;
+    Person p(ss);
+    int spawnTick = p.getTurn();
+    
+    while (true) {
+        while (!gameFile.eof() && spawnTick <= building.getTime()) {
+            building.spawnPerson(p);
+            gameFile >> ss;
+            Person nextPerson(ss);
+            
+            if (p.getTurn() == nextPerson.getTurn()) {
+                p = nextPerson;
+            }
+            else {
+                spawnTick = nextPerson.getTurn();
+                while (spawnTick > building.getTime()) {
+                    building.prettyPrintBuilding(cout);
+                    satisfactionIndex.printSatisfaction(cout, false);
+                    checkForGameEnd();
+                    
+                    Move nextMove = getMove();
+                    update(nextMove);
+                }
+                p = nextPerson;
+            }
+        }
         building.prettyPrintBuilding(cout);
         satisfactionIndex.printSatisfaction(cout, false);
         checkForGameEnd();
-     
+        
         Move nextMove = getMove();
         update(nextMove);
-    } 
+    }
+ 
 }
 
 // Stub for isValidPickupList for Core
