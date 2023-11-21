@@ -50,31 +50,21 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
 bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
-    bool isValid = true;
     string requestUp = "";
     Floor pFloor = building.getFloorByFloorNum(pickupFloorNum); //pickupFloor info
     
     for (int i = 0; i < pickupList.length(); i++) {
         for (int j = 0; j < i; j++) {
-            if (pickupList[i] == pickupList[j]) { //1: checking for duplicates
-                return false;
-            }
-            //5: checking if all requests are the same by creating a string of the requests and checking if each char of string is the same
-            if (pFloor.getPersonByIndex(pickupList[i]).getTargetFloor() > pickupFloorNum) { //if target floor is more than pickup floor; person wants to go up
-                requestUp += "1";
-            } else { // else person wants to go down
-                requestUp += "0";
-            }
-            if (requestUp[i] != requestUp[j]) { // if all elements are not equal
+            if (pickupList[i] == pickupList[j]) { //1: checking for duplicates CORRECT
                 return false;
             }
         }
         
-        if (pickupList[i] < 0 || pickupList[i] > 9) { //2: checking if indices are between 0 and 9
+        if (pickupList[i] - '0' < 0 || pickupList[i] - '0' > 9) { //2: checking if indices are between 0 and 9 CORRECT
             return false;
         }
-        
-        if (pickupList[i] >= pFloor.getNumPeople()) { //4: checking if indices is less than num of people on floor
+        if (pickupList[i] - '0' >= pFloor.getNumPeople()) {
+            //4: checking if all indices are less than num of people on floor CORRECT
             return false;
         }
     }
@@ -82,8 +72,22 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     if (pickupList.length() > ELEVATOR_CAPACITY) { //3: checking if pickup list length is less than elevator capacity
         return false; //might have to check how many ppl already in elevator
     }
-        
-    return isValid;
+    
+    //5: checking if all requests are the same by creating a string of the requests and checking if each char of string is the same <PROBS WRONG>
+    for (int k = 0; k < pickupList.length(); k++) {
+        Person targetPerson = pFloor.getPersonByIndex(pickupList[k] - '0');
+        if (targetPerson.getTargetFloor() > pickupFloorNum) { //if target floor is more than pickup floor; person wants to go up
+            requestUp += "1";
+        } else { // else person wants to go down
+            requestUp += "0";
+        }
+        for (int a = 0; a < k; a++) {
+            if (requestUp[k] != requestUp[a]) { // if all elements are not equal
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 //////////////////////////////////////////////////////
