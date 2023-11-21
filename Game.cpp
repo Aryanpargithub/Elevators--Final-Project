@@ -47,6 +47,46 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     }
 }
 
+
+    
+    if(!gameFile.is_open()){
+    exit(EXIT_FAILURE);
+        
+    }
+    isAIMode = isAIModeIn;
+    printGameStartPrompt();
+    initGame(gameFile);
+    
+    string load;
+    while(gameFile >> load) {
+    Person p1(load);
+        
+        
+    while(building.getTime() <= p1.getTurn()){            
+     building.prettyPrintBuilding(cout);             
+     satisfactionIndex.printSatisfaction(cout, false);          
+     checkForGameEnd();
+            Move nextMove = getMove();
+            update(nextMove);
+            
+        }
+        building.spawnPerson(p1);
+        
+    }
+    while(true){
+        building.prettyPrintBuilding(cout);
+        satisfactionIndex.printSatisfaction(cout, false);
+        checkForGameEnd();
+        Move nextMove = getMove();
+        update(nextMove);
+        
+    }
+    
+}
+
+
+
+
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
 bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
