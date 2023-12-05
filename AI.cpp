@@ -16,44 +16,95 @@
 // This file is used only in the Reach, not the Core.
 // You do not need to make any changes to this file for the Core
 
-string getAIMoveString(const BuildingState& buildingState) 
-{
- bool peeps = false; 
+string getAIMoveString(const BuildingState& buildingState) {
+    // if the building is empty, return empty string 
+    bool peeps = false; 
     int goFloor = 0;
     int anger;
     int newAnger;
-    string move = "";
-    int AngerLevels[NUM_FLOORS][MAX_PEOPLE_PER_FLOOR];
-    for (int i = 0; i < NUM_FLOORS; i++)
-    { 
-        _Floor floor = buildingState.floors[i]; 
-        if (floor.numPeople != 0)
-        { 
-            peeps = true; 
-        }
-    }
-    if(!peeps)
+    int Angersum;
+    int Count;
+    int MostPeep;
+    string move = "e";
+    for(int target = 0; target < NUM_ELEVATORS; target++)
     {
-        return "";
-    }
-
-    for(int k = 0; k < NUM_ELEVATORS; k++)
-    {
-            if(!buildingState.elevators[k].isServicing)
+            if(!buildingState.elevators[target].isServicing)
             {
-                for (int floor = 0; floor < NUM_FLOORS; ++floor) 
+                //move += to_string(target);
+                for (int floors = 0; floors < NUM_FLOORS; ++floors) 
                 {
-                        for (int person = 0; person < MAX_PEOPLE_PER_FLOOR; ++person) 
+                    Angersum = 0;
+                    Count = 0;
+                        for (int person = 0; person < buildingState.floors[floors].numPeople; ++person) 
                         {
-                            AngerLevels[floor][person] = buildingState.floors[floor].people[person].angerLevel;
+                            Count++;
+                            newAnger = buildingState.floors[floors].people[person].angerLevel;
+                            Angersum += newAnger;
+                           if(newAnger > anger)
+                           {
+                                anger = newAnger;
+                                goFloor = buildingState.floors[floors].floorNum;
+                           }
+                        }
+                        if(anger < 8)
+                        {
+                            if(Count > 5 && Angersum > 15)
+                            {
+                                goFloor = buildingState.floors[floors].floorNum;
+                            }
                         }
                 }
-            } 
+                
+                
+               
+                
+                    if(abs(buildingState.elevators[target].currentFloor - goFloor) > 6)
+                    {
+                        if(target + 1 < NUM_ELEVATORS)
+                        {
+                            if(!buildingState.elevators[target +1].isServicing)
+                            {
+                                if(!(abs(buildingState.elevators[target + 1].currentFloor - goFloor) > 6))
+                                {
+                                    move += to_string(target + 1);
+                                    move += "f";
+                                    move += to_string(goFloor);
+                                    return move;
+                                }
+                                else if((target + 2 < NUM_ELEVATORS) && !(abs(buildingState.elevators[target + 2].currentFloor - goFloor) > 6))
+                                {
+                                    move += to_string(target + 2);
+                                    move += "f";
+                                    move += to_string(goFloor);
+                                    return move;
+                                }
+                                else
+                                {
+                                    move += to_string(target);
+                                    move += "f";
+                                    move += to_string(goFloor);
+                                    return move;
+                                }
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        move += to_string(target);
+                        move += "f";
+                        move += to_string(goFloor);
+                        return move;
+                    }
+                
+                
+            }
     }
 }
 
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
-                       const Floor& floorToPickup) {
+                       const Floor& floorToPickup) 
+                       {
     string pickupList = "";
     int upRequests = 0;
     int downRequests = 0;
@@ -169,4 +220,6 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
         }
     }
     return pickupList;
+}
+
 }
