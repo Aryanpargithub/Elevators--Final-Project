@@ -66,6 +66,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             if (currentFloor < targetFloor) {
                 pickupList += b;
             }
+        }
     } else if (hasUpRequest == false && hasDownRequest == true) {
         for (int d = 0; d < currentNumPeople; d++) {
             Person currentPerson = floorToPickup.getPersonByIndex(d);
@@ -74,6 +75,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             if (currentFloor > targetFloor) {
                 pickupList += d;
             }
+        }
     } 
     
 */
