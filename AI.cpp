@@ -72,6 +72,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 }
             }
         }
+    //if uprequests and downrequests differ by 2 or more consider which type of request has more
     } else if (abs(upRequests-downRequests) >= 2) {
         if (upRequests > downRequests) {
             for (int p = 0; p < currentNumPeople; p++) {
