@@ -28,9 +28,8 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     int angerLevelUp = 0;
     int angerLevelDown = 0;
 
-    
-    //comparing angerlevels of up and down requests and adding to pickup list
-    int currentNumPeople = floorToPickup.getNumPeople();
+
+    //keeping record of up requests and downrequests
     for (int p = 0; p < currentNumPeople; p++) {
         Person currentPerson = floorToPickup.getPersonByIndex(p);
         int targetFloor = currentPerson.getTargetFloor();
@@ -41,6 +40,47 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             downRequests++;
         }
     }
+
+/* incomplete
+    // checking if current person with priority anger level is up request or down request
+    for (int a = 0; a < currentNumPeople; a++) {
+        Person currentPerson = floorToPickup.getPersonByIndex(a);
+        int targetFloor = currentPerson.getTargetFloor();
+        int currentFloor = currentPerson.getCurrentFloor();
+        
+        if (currentPerson.getAngerLevel() >= 8) {
+            if (currentFloor < targetFloor) {
+                hasUpRequest = true;
+            } else {
+                hasDownRequest = true;
+            }
+        }
+    }
+    
+    //depending on uprequest or downrequest of priority pick up the rest of the ppl
+    if (hasUpRequest == true && hasDownRequest == false) {
+        for (int b = 0; b < currentNumPeople; b++) {
+            Person currentPerson = floorToPickup.getPersonByIndex(b);
+            int targetFloor = currentPerson.getTargetFloor();
+            int currentFloor = currentPerson.getCurrentFloor();
+            if (currentFloor < targetFloor) {
+                pickupList += b;
+            }
+    } else if (hasUpRequest == false && hasDownRequest == true) {
+        for (int d = 0; d < currentNumPeople; d++) {
+            Person currentPerson = floorToPickup.getPersonByIndex(d);
+            int targetFloor = currentPerson.getTargetFloor();
+            int currentFloor = currentPerson.getCurrentFloor();
+            if (currentFloor > targetFloor) {
+                pickupList += d;
+            }
+    } 
+    
+*/
+
+
+//comparing angerlevels of up and down requests and adding to pickup list
+
     //if up requests and down requests only differ by one person consider anger levels
     if (abs(upRequests-downRequests) <= 1) {
         for (int i = 0; i < currentNumPeople; i++) {
