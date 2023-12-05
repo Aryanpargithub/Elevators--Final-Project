@@ -16,8 +16,40 @@
 // This file is used only in the Reach, not the Core.
 // You do not need to make any changes to this file for the Core
 
-string getAIMoveString(const BuildingState& buildingState) {
-    return "";
+string getAIMoveString(const BuildingState& buildingState) 
+{
+ bool peeps = false; 
+    int goFloor = 0;
+    int anger;
+    int newAnger;
+    string move = "";
+    int AngerLevels[NUM_FLOORS][MAX_PEOPLE_PER_FLOOR];
+    for (int i = 0; i < NUM_FLOORS; i++)
+    { 
+        _Floor floor = buildingState.floors[i]; 
+        if (floor.numPeople != 0)
+        { 
+            peeps = true; 
+        }
+    }
+    if(!peeps)
+    {
+        return "";
+    }
+
+    for(int k = 0; k < NUM_ELEVATORS; k++)
+    {
+            if(!buildingState.elevators[k].isServicing)
+            {
+                for (int floor = 0; floor < NUM_FLOORS; ++floor) 
+                {
+                        for (int person = 0; person < MAX_PEOPLE_PER_FLOOR; ++person) 
+                        {
+                            AngerLevels[floor][person] = buildingState.floors[floor].people[person].angerLevel;
+                        }
+                }
+            } 
+    }
 }
 
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
