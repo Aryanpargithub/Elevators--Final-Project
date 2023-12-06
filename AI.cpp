@@ -193,7 +193,6 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             }
         }
         return pickupList;
-        
     } else if (hasUpRequest == false && hasDownRequest == true) {
         for (int d = 0; d < currentNumPeople; d++) {
             Person currentPerson = floorToPickup.getPersonByIndex(d);
@@ -204,7 +203,6 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             }
         }
         return pickupList;
-        
     //priority people want to go up and down so check which side has more people
     } else if (hasUpRequest == true && hasDownRequest == true) {
         if (upRequests > downRequests) {
@@ -254,6 +252,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                     pickupList += to_string(j);
                 }
             }
+            return pickupList;
         } else {
             for (int k = 0; k < currentNumPeople; k++) {
                 Person currentPerson = floorToPickup.getPersonByIndex(k);
@@ -263,6 +262,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                     pickupList += to_string(k);
                 }
             }
+            return pickupList;
         }
         
     //if uprequests and downrequests differ by 2 or more consider which type of request has more
@@ -276,6 +276,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                     pickupList += to_string(p);
                 }
             }
+            return pickupList;
         } else {
             for (int c = 0; c < currentNumPeople; c++) {
                 Person currentPerson = floorToPickup.getPersonByIndex(c);
@@ -286,7 +287,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 }
             }
         }
+        return pickupList;
     }
     return pickupList;
 }
-
