@@ -128,19 +128,6 @@ string getAIMoveString(const BuildingState& buildingState) {
 }
     
 
-    
-/* my code
- if (buildingState.elevators[closestElevator].currentFloor == floorPriority) {
-     moveAI = 'e' + to_string(closestElevator) + 'p';
- } else if (!buildingState.elevators[closestElevator].isServicing) {
-     moveAI = 'e' + to_string(closestElevator) + 'f' + to_string(floorPriority);
- } else {
-     moveAI = "";
- }
- 
- return moveAI;
- */
-
 string getAIPickupList(const Move& move, const BuildingState& buildingState,
                        const Floor& floorToPickup) {
     string pickupList = "";
