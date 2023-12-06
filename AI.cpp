@@ -17,90 +17,68 @@
 // You do not need to make any changes to this file for the Core
 
 string getAIMoveString(const BuildingState& buildingState) {
-    // if the building is empty, return empty string 
-    bool peeps = false; 
-    int goFloor = 0;
-    int anger;
-    int newAnger;
-    int Angersum;
-    int Count;
-    int MostPeep;
-    string move = "e";
-    for(int target = 0; target < NUM_ELEVATORS; target++)
-    {
-            if(!buildingState.elevators[target].isServicing)
-            {
-                //move += to_string(target);
-                for (int floors = 0; floors < NUM_FLOORS; ++floors) 
-                {
-                    Angersum = 0;
-                    Count = 0;
-                        for (int person = 0; person < buildingState.floors[floors].numPeople; ++person) 
-                        {
-                            Count++;
-                            newAnger = buildingState.floors[floors].people[person].angerLevel;
-                            Angersum += newAnger;
-                           if(newAnger > anger)
-                           {
-                                anger = newAnger;
-                                goFloor = buildingState.floors[floors].floorNum;
-                           }
-                        }
-                        if(anger < 8)
-                        {
-                            if(Count > 5 && Angersum > 15)
-                            {
-                                goFloor = buildingState.floors[floors].floorNum;
-                            }
-                        }
-                }
-                
-                
-               
-                
-                    if(abs(buildingState.elevators[target].currentFloor - goFloor) > 6)
-                    {
-                        if(target + 1 < NUM_ELEVATORS)
-                        {
-                            if(!buildingState.elevators[target +1].isServicing)
-                            {
-                                if(!(abs(buildingState.elevators[target + 1].currentFloor - goFloor) > 6))
-                                {
-                                    move += to_string(target + 1);
-                                    move += "f";
-                                    move += to_string(goFloor);
-                                    return move;
-                                }
-                                else if((target + 2 < NUM_ELEVATORS) && !(abs(buildingState.elevators[target + 2].currentFloor - goFloor) > 6))
-                                {
-                                    move += to_string(target + 2);
-                                    move += "f";
-                                    move += to_string(goFloor);
-                                    return move;
-                                }
-                                else
-                                {
-                                    move += to_string(target);
-                                    move += "f";
-                                    move += to_string(goFloor);
-                                    return move;
-                                }
-                            }
-                        }
-                        
-                    }
-                    else
-                    {
-                        move += to_string(target);
-                        move += "f";
-                        move += to_string(goFloor);
-                        return move;
-                    }
-                
-                
-            }
+    int totalFloorAngerLevel = 0;
+    int angerByFloor[NUM_FLOORS] = {0};
+    bool floorServiced[NUM_FLOORS] = {0};
+    int floorPriority = 0;
+    string moveAI = "";
+    
+    //putting total anger levels of everyone on each floor into array of angerByFloor (position 0 is floor 0)
+    for (int a = 0; a < NUM_FLOORS; a++) {
+        for (int i = 0; i < buildingState.floors[a].numPeople; i++) {
+            totalFloorAngerLevel += buildingState.floors[a].people[i].angerLevel;
+        }
+        angerByFloor[a] = totalFloorAngerLevel;
+        totalFloorAngerLevel = 0;
     }
+    
+    //creating array of whether a floor is already being serviced
+    for (int b = 0; b < NUM_FLOORS; b++) {
+        for (int i = 0; i < NUM_ELEVATORS; i++) {
+            if (buildingState.elevators[i].targetFloor == b) {
+                floorServiced[b] = true;
+            }
+        }
+    }
+    
+    //finding highest anger level among unserviced floors
+    int highestAnger = 0;
+    for (int c = 0; c < NUM_FLOORS; c++) {
+        if (highestAnger < angerByFloor[c] && floorServiced[c] == false) {
+            highestAnger = angerByFloor[c];
+        }
+    }
+    
+    //Set floor priority based on highest anger
+    for (int d = 0; d < 10; d++) {
+        if (angerByFloor[d] == highestAnger) {
+            floorPriority = d;
+        }
+    }
+        
+    //Finding closestElevator
+    int smallestDistance = 10;
+    int distanceEToF = 0;
+    int closestElevator = 0;
+    for (int e = 0; e < NUM_ELEVATORS; e++) {
+        if (!buildingState.elevators[e].isServicing) {
+            distanceEToF = abs(floorPriority - buildingState.elevators[e].currentFloor);
+            if (distanceEToF < smallestDistance) {
+                smallestDistance = distanceEToF;
+                closestElevator = e;
+            }
+        }
+    }
+    
+    if (!buildingState.elevators[closestElevator].isServicing) {
+        moveAI = 'e' + to_string(closestElevator) + 'f' + to_string(floorPriority);
+    } else {
+        moveAI = "";
+    }
+    
+    return moveAI;      
 }
+
 
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
                        const Floor& floorToPickup) 
