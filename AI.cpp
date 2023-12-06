@@ -12,7 +12,9 @@
 
 #include "AI.h"
 #include <cassert>
+#include <algorithm>
 
+using namespace std;
 // This file is used only in the Reach, not the Core.
 // You do not need to make any changes to this file for the Core
 
@@ -21,6 +23,10 @@ string getAIMoveString(const BuildingState& buildingState) {
     int angerByFloor[NUM_FLOORS] = {0};
     bool floorServiced[NUM_FLOORS] = {0};
     int floorPriority = 0;
+    
+    bool passCondition = false;
+    bool moveCondition = false;
+    bool pickUpCondition = false;
     string moveAI = "";
     
     //putting total anger levels of everyone on each floor into array of angerByFloor (position 0 is floor 0)
@@ -32,31 +38,50 @@ string getAIMoveString(const BuildingState& buildingState) {
         totalFloorAngerLevel = 0;
     }
     
+    
     //creating array of whether a floor is already being serviced
     for (int b = 0; b < NUM_FLOORS; b++) {
         for (int i = 0; i < NUM_ELEVATORS; i++) {
-            if (buildingState.elevators[i].targetFloor == b) {
+            if (buildingState.elevators[i].targetFloor == b && buildingState.floors[b].numPeople != 0) {
                 floorServiced[b] = true;
             }
         }
     }
     
-    //finding highest anger level among unserviced floors
+    //finding highest anger level
     int highestAnger = 0;
     for (int c = 0; c < NUM_FLOORS; c++) {
-        if (highestAnger < angerByFloor[c] && floorServiced[c] == false) {
+        if (highestAnger < angerByFloor[c]) {
             highestAnger = angerByFloor[c];
         }
     }
     
+    
     //Set floor priority based on highest anger
-    for (int d = 0; d < 10; d++) {
-        if (angerByFloor[d] == highestAnger) {
+    for (int d = 0; d < NUM_FLOORS; d++) {
+        if (angerByFloor[d] == highestAnger && buildingState.floors[d].numPeople != 0) {
             floorPriority = d;
+        
+        }
+        else if (angerByFloor[d] == highestAnger && floorServiced[d] == true) {
+            //finding new highest anger if floor is already being serviced
+            angerByFloor[d] = 0;
+            for (int h = 0; h < NUM_FLOORS; h++) {
+                if (highestAnger < angerByFloor[h]) {
+                    highestAnger = angerByFloor[h];
+                }
+            }
+            for (int m = 0; m < NUM_FLOORS; m++) {
+                if (angerByFloor[m] == highestAnger && floorServiced[m] == false) {
+                    floorPriority = m;
+                }
+            }
         }
     }
-        
-    //Finding closestElevator
+    
+
+    
+    //Finding closestElevator that is not servicing
     int smallestDistance = 10;
     int distanceEToF = 0;
     int closestElevator = 0;
@@ -70,22 +95,54 @@ string getAIMoveString(const BuildingState& buildingState) {
         }
     }
     
-    if (!buildingState.elevators[closestElevator].isServicing) {
-        moveAI = 'e' + to_string(closestElevator) + 'f' + to_string(floorPriority);
-    } else {
-        moveAI = "";
+    
+    
+    //checking if there are elevators available and how many
+    int availableElevators = 0;
+    for (int i = 0; i < NUM_ELEVATORS; i++) {
+        if (!buildingState.elevators[i].isServicing) {
+            availableElevators++;
+        }
     }
     
-    return moveAI;      
+    if (availableElevators > 0 && buildingState.elevators[closestElevator].currentFloor != floorPriority && floorServiced[floorPriority] == false) {
+        moveCondition = true;
+        
+    } else if (availableElevators > 0 && buildingState.floors[buildingState.elevators[closestElevator].currentFloor].numPeople != 0) {
+        pickUpCondition = true;
+
+    } else {
+        passCondition = true;
+    }
+    
+    if (moveCondition) {
+        moveAI = "e" + to_string(closestElevator) + "f" + to_string(floorPriority);
+        return moveAI;
+    } else if (pickUpCondition) {
+        moveAI = "e" + to_string(closestElevator) + "p";
+        return moveAI;
+    } else {
+        moveAI = "";
+        return moveAI;
+    }
 }
+    
 
+    
+/*
+ if (buildingState.elevators[closestElevator].currentFloor == floorPriority) {
+     moveAI = 'e' + to_string(closestElevator) + 'p';
+ } else if (!buildingState.elevators[closestElevator].isServicing) {
+     moveAI = 'e' + to_string(closestElevator) + 'f' + to_string(floorPriority);
+ } else {
+     moveAI = "";
+ }
+ 
+ return moveAI;
+ */
 
-
-
-string getAIPickupList(const Move& move, const BuildingState& buildingState, 
-                       const Floor& floorToPickup) 
-                       {
-
+string getAIPickupList(const Move& move, const BuildingState& buildingState,
+                       const Floor& floorToPickup) {
     string pickupList = "";
     int upRequests = 0;
     int downRequests = 0;
@@ -144,8 +201,29 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 pickupList += to_string(d);
             }
         }
+    //priority people want to go up and down so check which side has more people
+    } else if (hasUpRequest == true && hasDownRequest == true) {
+        if (upRequests > downRequests) {
+            for (int e = 0; e < currentNumPeople; e++) {
+                Person currentPerson = floorToPickup.getPersonByIndex(e);
+                int targetFloor = currentPerson.getTargetFloor();
+                int currentFloor = currentPerson.getCurrentFloor();
+                if (currentFloor < targetFloor) {
+                    pickupList += to_string(e);
+                }
+            }
+        } else {
+            for (int f = 0; f < currentNumPeople; f++) {
+                Person currentPerson = floorToPickup.getPersonByIndex(f);
+                int targetFloor = currentPerson.getTargetFloor();
+                int currentFloor = currentPerson.getCurrentFloor();
+                if (currentFloor > targetFloor) {
+                    pickupList += to_string(f);
+                }
+            }
+        }
     }
-    
+    // if no priority people, next step
         
     //comparing angerlevels of up and down requests and adding to pickup list
 
