@@ -129,7 +129,7 @@ string getAIMoveString(const BuildingState& buildingState) {
     
 
     
-/*
+/* my code
  if (buildingState.elevators[closestElevator].currentFloor == floorPriority) {
      moveAI = 'e' + to_string(closestElevator) + 'p';
  } else if (!buildingState.elevators[closestElevator].isServicing) {
