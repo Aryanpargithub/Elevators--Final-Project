@@ -190,6 +190,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             int currentFloor = currentPerson.getCurrentFloor();
             if (currentFloor < targetFloor) {
                 pickupList += to_string(b);
+                return pickupList;
             }
         }
     } else if (hasUpRequest == false && hasDownRequest == true) {
@@ -199,6 +200,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             int currentFloor = currentPerson.getCurrentFloor();
             if (currentFloor > targetFloor) {
                 pickupList += to_string(d);
+                return pickupList;
             }
         }
     //priority people want to go up and down so check which side has more people
@@ -210,6 +212,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor < targetFloor) {
                     pickupList += to_string(e);
+                    return pickupList;
                 }
             }
         } else {
@@ -219,6 +222,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor > targetFloor) {
                     pickupList += to_string(f);
+                    return pickupList;
                 }
             }
         }
