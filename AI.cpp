@@ -17,112 +17,67 @@
 // You do not need to make any changes to this file for the Core
 
 string getAIMoveString(const BuildingState& buildingState) {
-    // determining when the elevator should pass
-    bool passCondition = false;
-    bool floorCondition = false;
-    bool pickUpCondition = false;
-    int sumAngerLevel = 0;
-    int floorAnger[NUM_FLOORS] = {0};
-    bool floorFilled[NUM_FLOORS] = {0};
-    int floorWanted = 0;
+    int totalFloorAngerLevel = 0;
+    int angerByFloor[NUM_FLOORS] = {0};
+    bool floorServiced[NUM_FLOORS] = {0};
+    int floorPriority = 0;
     string moveAI = "";
-
-    // Calculating total anger levels on each floor
+    
+    //putting total anger levels of everyone on each floor into array of angerByFloor (position 0 is floor 0)
     for (int a = 0; a < NUM_FLOORS; a++) {
         for (int i = 0; i < buildingState.floors[a].numPeople; i++) {
-            sumAngerLevel += buildingState.floors[a].people[i].angerLevel;
+            totalFloorAngerLevel += buildingState.floors[a].people[i].angerLevel;
         }
-        floorAnger[a] = sumAngerLevel;
-        sumAngerLevel = 0;
+        angerByFloor[a] = totalFloorAngerLevel;
+        totalFloorAngerLevel = 0;
     }
-
-    int highestAnger = 0;
-    int temp1 = 0;
-
-    // Finding the floor with the highest total anger level
+    
+    //creating array of whether a floor is already being serviced
     for (int b = 0; b < NUM_FLOORS; b++) {
-        temp1 = floorAnger[b];
-        if (highestAnger < temp1) {
-            highestAnger = temp1;
-        }
-    }
-
-    // Checking if elevators are already servicing a floor
-    for (int e = 0; e < NUM_FLOORS; e++) {
         for (int i = 0; i < NUM_ELEVATORS; i++) {
-            if (buildingState.elevators[i].targetFloor == e) {
-                floorFilled[e] = true;
+            if (buildingState.elevators[i].targetFloor == b) {
+                floorServiced[b] = true;
             }
         }
     }
-
-    // Identifying the floor with the highest anger and not being serviced
+    
+    //finding highest anger level among unserviced floors
+    int highestAnger = 0;
     for (int c = 0; c < NUM_FLOORS; c++) {
-        if (floorAnger[c] == highestAnger) {
-            floorWanted = c;
-        } else if (floorAnger[c] == highestAnger && floorFilled[c]) {
-            floorAnger[c] = 0;
-            for (int d = 0; d < NUM_FLOORS; d++) {
-                temp1 = floorAnger[d];
-                if (highestAnger < temp1) {
-                    highestAnger = temp1;
-                }
-            }
-            for (int e = 0; e < NUM_FLOORS; e++) {
-                if (floorAnger[e] == highestAnger && !floorFilled[e]) {
-                    floorWanted = e;
-                }
-            }
+        if (highestAnger < angerByFloor[c] && floorServiced[c] == false) {
+            highestAnger = angerByFloor[c];
         }
     }
-
-    // Finding the closest elevator
-    int minDistance = 100;
-    int diff = 0;
-    int elevatorNumber = 0;
-
-    for (int i = 0; i < NUM_ELEVATORS; ++i) {
-        if (!buildingState.elevators[i].isServicing) {
-            diff = abs(floorWanted - buildingState.elevators[i].currentFloor);
-
-            if (minDistance > diff) {
-                minDistance = diff;
-                elevatorNumber = i;
+    
+    //Set floor priority based on highest anger
+    for (int d = 0; d < 10; d++) {
+        if (angerByFloor[d] == highestAnger) {
+            floorPriority = d;
+        }
+    }
+        
+    //Finding closestElevator
+    int smallestDistance = 10;
+    int distanceEToF = 0;
+    int closestElevator = 0;
+    for (int e = 0; e < NUM_ELEVATORS; e++) {
+        if (!buildingState.elevators[e].isServicing) {
+            distanceEToF = abs(floorPriority - buildingState.elevators[e].currentFloor);
+            if (distanceEToF < smallestDistance) {
+                smallestDistance = distanceEToF;
+                closestElevator = e;
             }
         }
     }
-
-    int counter = 0;
-
-    // Checking conditions for different scenarios
-    for (int i = 0; i < NUM_ELEVATORS; i++) {
-        if (!buildingState.elevators[i].isServicing) {
-            counter++;
-        }
-    }
-
-    if (counter > 0 && buildingState.elevators[elevatorNumber].currentFloor != floorWanted && !floorFilled[floorWanted]) {
-        floorCondition = true;
-    } else if (counter > 0 && buildingState.floors[buildingState.elevators[elevatorNumber].currentFloor].numPeople != 0) {
-        pickUpCondition = true;
+    
+    if (!buildingState.elevators[closestElevator].isServicing) {
+        moveAI = 'e' + to_string(closestElevator) + 'f' + to_string(floorPriority);
     } else {
-        passCondition = true;
+        moveAI = "";
     }
-
-    if (floorCondition) {
-        moveAI = "e" + to_string(elevatorNumber) + "f" + to_string(floorWanted);
-    } else if (pickUpCondition) {
-        moveAI = "e" + to_string(elevatorNumber) + "p";
-    }
-
-    return moveAI;
+    
+    return moveAI;      
 }
-
-
-
-
-
-
 
 
 
