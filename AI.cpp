@@ -83,13 +83,19 @@ string getAIMoveString(const BuildingState& buildingState) {
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
                        const Floor& floorToPickup) 
                        {
+
     string pickupList = "";
     int upRequests = 0;
     int downRequests = 0;
     int angerLevelUp = 0;
     int angerLevelDown = 0;
+    bool hasUpRequest = false;
+    bool hasDownRequest = false;
 
+    
 
+    int currentNumPeople = floorToPickup.getNumPeople();
+    
     //keeping record of up requests and downrequests
     for (int p = 0; p < currentNumPeople; p++) {
         Person currentPerson = floorToPickup.getPersonByIndex(p);
@@ -102,7 +108,6 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
         }
     }
 
-/* incomplete
     // checking if current person with priority anger level is up request or down request
     for (int a = 0; a < currentNumPeople; a++) {
         Person currentPerson = floorToPickup.getPersonByIndex(a);
@@ -125,7 +130,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             int targetFloor = currentPerson.getTargetFloor();
             int currentFloor = currentPerson.getCurrentFloor();
             if (currentFloor < targetFloor) {
-                pickupList += b;
+                pickupList += to_string(b);
             }
         }
     } else if (hasUpRequest == false && hasDownRequest == true) {
@@ -134,15 +139,13 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
             int targetFloor = currentPerson.getTargetFloor();
             int currentFloor = currentPerson.getCurrentFloor();
             if (currentFloor > targetFloor) {
-                pickupList += d;
+                pickupList += to_string(d);
             }
         }
-    } 
+    }
     
-*/
-
-
-//comparing angerlevels of up and down requests and adding to pickup list
+        
+    //comparing angerlevels of up and down requests and adding to pickup list
 
     //if up requests and down requests only differ by one person consider anger levels
     if (abs(upRequests-downRequests) <= 1) {
@@ -162,7 +165,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int targetFloor = currentPerson.getTargetFloor();
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor < targetFloor) {
-                    pickupList += j;
+                    pickupList += to_string(j);
                 }
             }
         } else {
@@ -171,10 +174,11 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int targetFloor = currentPerson.getTargetFloor();
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor > targetFloor) {
-                    pickupList += k;
+                    pickupList += to_string(k);
                 }
             }
         }
+        
     //if uprequests and downrequests differ by 2 or more consider which type of request has more
     } else if (abs(upRequests-downRequests) >= 2) {
         if (upRequests > downRequests) {
@@ -183,7 +187,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int targetFloor = currentPerson.getTargetFloor();
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor < targetFloor) {
-                    pickupList += p;
+                    pickupList += to_string(p);
                 }
             }
         } else {
@@ -192,7 +196,7 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                 int targetFloor = currentPerson.getTargetFloor();
                 int currentFloor = currentPerson.getCurrentFloor();
                 if (currentFloor > targetFloor) {
-                    pickupList += c;
+                    pickupList += to_string(c);
                 }
             }
         }
@@ -200,4 +204,3 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     return pickupList;
 }
 
-}
